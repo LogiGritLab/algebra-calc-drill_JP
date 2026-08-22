@@ -1,5 +1,5 @@
 # algebra-calc-drill_JP
-正負の数・数式の四則演算練習サイト (Basic Algebra Practice Web App)
+正負の数・数式の計算練習サイト（中学生向け） (Basic Algebra Practice Web App)
 
 中学生から大人まで、数学の基礎体力である「計算力」と「計算の仕組みを読み解く力」を鍛えるための無料ウェブアプリケーションです。
 論理的な理解を深めるためのスモールステップでの学習をサポートします。
