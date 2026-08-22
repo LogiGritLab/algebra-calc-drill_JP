@@ -410,18 +410,19 @@ function makeProblem() {
       let d2 = isLinear ? 1 : 2;
       let P1, P2;
       do {
-        P1 = [genTerm(vars, d2, d2+1, 4, false, d2)];
-        if (d2 === 2 && Math.random() < 0.5) P1.push(genTerm(vars, 1, 2, 4, false, 1));
-        else if (d2 === 1 && Math.random() < 0.8) P1.push(genTerm(vars, 0, 1, 4, false, 0));
-        if (P1.length < 3 && Math.random() < 0.5) P1.push(genTerm(vars, 0, 1, 4, false, 0));
+        // 最高次数が2以下になるよう調整
+        P1 = [genTerm(vars, d2, d2, 4, false, d2)];
+        if (d2 === 2 && Math.random() < 0.5) P1.push(genTerm(vars, 1, 1, 4, false, 1));
+        else if (d2 === 1 && Math.random() < 0.8) P1.push(genTerm(vars, 0, 0, 4, false, 0));
+        if (P1.length < 3 && Math.random() < 0.5) P1.push(genTerm(vars, 0, 0, 4, false, 0));
         
         if (vars >= 1 && P1[0]) P1[0].x = Math.max(1, P1[0].x || 0);
         P1 = simplify(P1).slice(0, 3);
         
-        P2 = [genTerm(vars, d2, d2+1, 4, false, d2)];
-        if (d2 === 2 && Math.random() < 0.5) P2.push(genTerm(vars, 1, 2, 4, false, 1));
-        else if (d2 === 1 && Math.random() < 0.8) P2.push(genTerm(vars, 0, 1, 4, false, 0));
-        if (P2.length < 3 && Math.random() < 0.5) P2.push(genTerm(vars, 0, 1, 4, false, 0));
+        P2 = [genTerm(vars, d2, d2, 4, false, d2)];
+        if (d2 === 2 && Math.random() < 0.5) P2.push(genTerm(vars, 1, 1, 4, false, 1));
+        else if (d2 === 1 && Math.random() < 0.8) P2.push(genTerm(vars, 0, 0, 4, false, 0));
+        if (P2.length < 3 && Math.random() < 0.5) P2.push(genTerm(vars, 0, 0, 4, false, 0));
         P2 = simplify(P2).slice(0, 3);
       } while (P1.length < 2 || P2.length < 2);
 
@@ -443,20 +444,18 @@ function makeProblem() {
       explanation.push(`$$ = ${polyToTex(ansObj)} $$`);
     } else if (realOp === 'mul') {
       let isMonoPoly = Math.random() < 0.5;
-      let isLinear = Math.random() < 0.8;
-      let d2 = isLinear ? 1 : 2;
       let P1, P2;
       if (isMonoPoly) {
+        let d2 = 1; // 答えが3次式以上にならないように、掛け合わせる多項式を1次式に固定
         do {
           P1 = [genTerm(vars, null, 1, 4, true, 1)];
           if (P1[0].x === 0 && P1[0].y === 0 && P1[0].z === 0) {
             let t = pick(vars === 1 ? ['x'] : vars === 2 ? ['x', 'y'] : ['x', 'y', 'z']);
             P1[0][t] = 1;
           }
-          P2 = [genTerm(vars, d2, d2+1, 4, false, d2)];
-          if (d2 === 2 && Math.random() < 0.5) P2.push(genTerm(vars, 1, 2, 4, false, 1));
-          else if (d2 === 1 && Math.random() < 0.8) P2.push(genTerm(vars, 0, 1, 4, false, 0));
-          if (P2.length < 3 && Math.random() < 0.5) P2.push(genTerm(vars, 0, 1, 4, false, 0));
+          P2 = [genTerm(vars, d2, d2, 4, false, d2)];
+          if (Math.random() < 0.8) P2.push(genTerm(vars, 0, 0, 4, false, 0));
+          if (P2.length < 3 && Math.random() < 0.5) P2.push(genTerm(vars, 0, 0, 4, false, 0));
           P2 = simplify(P2).slice(0, 3);
         } while (P2.length < 2);
         
@@ -479,8 +478,9 @@ function makeProblem() {
         explanation.push(`$$ = ${polyToTex(ansObj)} $$`);
       } else {
         do {
-          P1 = simplify([genTerm(vars, 1, 2, 3, false, 1), genTerm(vars, 0, 1, 3, false, 0)]).slice(0, 2);
-          P2 = simplify([genTerm(vars, 1, 2, 3, false, 1), genTerm(vars, 0, 1, 3, false, 0)]).slice(0, 2);
+          // 答えが3次式にならないように 1次式同士の掛け算にする
+          P1 = simplify([genTerm(vars, 1, 1, 3, false, 1), genTerm(vars, 0, 0, 3, false, 0)]).slice(0, 2);
+          P2 = simplify([genTerm(vars, 1, 1, 3, false, 1), genTerm(vars, 0, 0, 3, false, 0)]).slice(0, 2);
           if (vars >= 1 && P1.every(t=>!t.x) && P2.every(t=>!t.x)) P1[0].x = Math.max(1, P1[0].x || 0);
           P1 = simplify(P1); P2 = simplify(P2);
         } while (P1.length < 2 || P2.length < 2);
@@ -767,9 +767,17 @@ function applyModeUI() {
   });
   
   opMenu.querySelectorAll('.chip').forEach(btn => {
-    const active = btn.dataset.op === currentOp;
-    btn.classList.toggle('active', active);
-    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    // 多項式(poly)が選ばれている場合、割り算(div)は中学生の範囲外なのでグレーアウト
+    if (currentType === 'poly' && btn.dataset.op === 'div') {
+      btn.disabled = true;
+      btn.classList.remove('active');
+      btn.setAttribute('aria-selected', 'false');
+    } else {
+      btn.disabled = false;
+      const active = btn.dataset.op === currentOp;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    }
   });
 
   const varChips = varMenu.querySelectorAll('.chip');
@@ -947,6 +955,12 @@ typeMenu.addEventListener('click', (e) => {
   const btn = e.target.closest('.chip');
   if (!btn || btn.disabled) return;
   currentType = btn.dataset.type;
+  
+  // 多項式が選ばれたとき、中学生は割り算を学習しないため自動的に足し算・引き算に変更
+  if (currentType === 'poly' && currentOp === 'div') {
+    currentOp = 'addsub';
+  }
+  
   applyModeUI(); newProblem();
 });
 opMenu.addEventListener('click', (e) => {
