@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="正負の数・数式の四則演算練習サイト">
+<title>正負の数・数式の四則演算練習サイト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="bg-pattern" aria-hidden="true"></div>
+
+  <div class="app">
+    <header class="header">
+      <div class="header-text">
+        <h1>正負の数・数式の四則演算練習サイト</h1>
+      </div>
+      <button type="button" id="resetBtn" class="btn-ghost" title="スコアをリセット">
+        <span class="btn-ghost-icon">✕</span>リセット
+      </button>
+    </header>
+
+    <section class="controls" aria-label="練習メニュー">
+      <div class="control-group">
+        <span class="control-label">分野</span>
+        <div class="chip-row" id="typeMenu" role="tablist">
+          <button type="button" class="chip" data-type="num" role="tab" aria-selected="false">正負の数</button>
+          <button type="button" class="chip active" data-type="mono" role="tab" aria-selected="true">単項式</button>
+          <button type="button" class="chip" data-type="poly" role="tab" aria-selected="false">多項式</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <span class="control-label">演算</span>
+        <div class="chip-row" id="opMenu" role="tablist">
+          <button type="button" class="chip active" data-op="addsub" role="tab" aria-selected="true">たし算・ひき算</button>
+          <button type="button" class="chip" data-op="mul" role="tab" aria-selected="false">かけ算</button>
+          <button type="button" class="chip" data-op="div" role="tab" aria-selected="false">わり算</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <span class="control-label">文字の種類</span>
+        <div class="chip-row" id="varMenu" role="tablist">
+          <button type="button" class="chip active" data-var="1" role="tab" aria-selected="true">1こ</button>
+          <button type="button" class="chip" data-var="2" role="tab" aria-selected="false">2こ</button>
+          <button type="button" class="chip" data-var="3" role="tab" aria-selected="false">3こ</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="スコア">
+      <div class="stat stat-ok">
+        <span class="stat-label">正解</span>
+        <span class="stat-value ok" id="correctCount">0</span>
+      </div>
+      <div class="stat stat-ng">
+        <span class="stat-label">不正解</span>
+        <span class="stat-value ng" id="wrongCount">0</span>
+      </div>
+      <div class="stat stat-streak">
+        <span class="stat-label">連続</span>
+        <span class="stat-value streak" id="streakCount">0</span>
+      </div>
+    </section>
+
+    <main class="card">
+      <div id="questionArea">
+        <!-- filled by JS -->
+      </div>
+      
+      <div class="explanation" id="explanation" hidden>
+        <!-- filled by JS -->
+      </div>
+    </main>
+
+    <p class="footer-note">✎ 解答後、「次へ」またはEnter で次の問題へ進みます。</p>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
